@@ -1,18 +1,15 @@
 #!/bin/bash
 
 #########################################
-# Description: Create or manage VPC in AWS
-# Author: Mani
-# Options:
-#   create        Create VPC and subnet
-#   deleteVPC     Delete the VPC created by this script
-#   deleteSubnet  Delete the subnet created by this script
-#   --help        Display this help message
+# Description: Manage AWS VPC and Subnet
+# Usage:
+#   ./aws_vpc_create.sh create
+#   ./aws_vpc_create.sh deleteVPC <vpc-id>
+#   ./aws_vpc_create.sh deleteSubnet <subnet-id>
+#   ./aws_vpc_create.sh --help
 #########################################
 
 # Variables
-VPC_NAME="vpc-demo"
-SUBNET_NAME="subnet-demo"
 REGION="us-east-1"
 VPC_CIDR="10.0.0.0/16"
 SUBNET_CIDR="10.0.3.0/24"
@@ -42,14 +39,24 @@ createVPC() {
 }
 
 deleteVPC() {
-    echo "Deleting VPC with ID: $VPC_ID"
-    aws ec2 delete-vpc --vpc-id $VPC_ID --region $REGION
+    VPC_TO_DELETE=$1
+    if [ -z "$VPC_TO_DELETE" ]; then
+        echo "Please provide a VPC ID to delete."
+        exit 1
+    fi
+    echo "Deleting VPC with ID: $VPC_TO_DELETE"
+    aws ec2 delete-vpc --vpc-id "$VPC_TO_DELETE" --region $REGION
     echo "VPC deleted."
 }
 
 deleteSubnet() {
-    echo "Deleting subnet with ID: $SUBNET_ID"
-    aws ec2 delete-subnet --subnet-id $SUBNET_ID --region $REGION
+    SUBNET_TO_DELETE=$1
+    if [ -z "$SUBNET_TO_DELETE" ]; then
+        echo "Please provide a Subnet ID to delete."
+        exit 1
+    fi
+    echo "Deleting subnet with ID: $SUBNET_TO_DELETE"
+    aws ec2 delete-subnet --subnet-id "$SUBNET_TO_DELETE" --region $REGION
     echo "Subnet deleted."
 }
 
@@ -57,8 +64,8 @@ help() {
     echo "Usage: ./aws_vpc_create.sh [options]"
     echo "Options:"
     echo "  create        Create VPC and subnet"
-    echo "  deleteVPC     Delete the VPC created by this script"
-    echo "  deleteSubnet  Delete the subnet created by this script"
+    echo "  deleteVPC <vpc-id>     Delete the specified VPC"
+    echo "  deleteSubnet <subnet-id>  Delete the specified subnet"
     echo "  --help        Display this help message"
 }
 
@@ -68,10 +75,10 @@ case "$1" in
         createVPC
         ;;
     deleteVPC)
-        deleteVPC
+        deleteVPC $2
         ;;
     deleteSubnet)
-        deleteSubnet
+        deleteSubnet $2
         ;;
     --help)
         help
