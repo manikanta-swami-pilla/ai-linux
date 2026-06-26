@@ -7,6 +7,11 @@
 # 
 # - Verify if user has AWS installed, User might be using windows, linux or mac.
 # - verify if AWS CLI is configured
+# - Usage: ./aws_vpc_create.sh
+# - options: deleteVPC - delete the VPC created by this script,
+#            deleteSubnet - delete the subnet created by this script
+#            --help - display this help message
+# 
 #
 #########################################
 
@@ -50,5 +55,25 @@ echo "Public subnet created with ID: $SUBNET_ID"
 # Tag the subnet
 aws ec2 create-tags --resources $SUBNET_ID --tags Key=Name,Value=$SUBNET_NAME --region $REGION
 echo "Subnet tagged with name: $SUBNET_NAME"
+
+deleteVPC() {
+    echo "Deleting VPC with ID: $VPC_ID"
+    aws ec2 delete-vpc --vpc-id $VPC_ID --region $REGION
+    echo "VPC deleted."
+}
+
+deleteSubnet() {
+    echo "Deleting subnet with ID: $SUBNET_ID"
+    aws ec2 delete-subnet --subnet-id $SUBNET_ID --region $REGION
+    echo "Subnet deleted."
+}
+
+help() {
+    echo "Usage: ./aws_vpc_create.sh [options]"
+    echo "Options:"
+    echo "  deleteVPC     Delete the VPC created by this script"
+    echo "  deleteSubnet  Delete the subnet created by this script"
+    echo "  --help        Display this help message"
+}
 
 # End of script
