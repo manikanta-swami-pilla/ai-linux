@@ -42,19 +42,11 @@ echo "Creating VPC..."
 VPC_ID=$(aws ec2 create-vpc --cidr-block $VPC_CIDR --query 'Vpc.VpcId' --output text --region $REGION)
 echo "VPC created with ID: $VPC_ID" 
 
-# Tag the VPC
-aws ec2 create-tags --resources $VPC_ID --tags Key=Name,Value=$VPC_NAME --region $REGION
-echo "VPC tagged with name: $VPC_NAME"
-
 # Create a public subnet
 echo "Creating public subnet..."  
 SUBNET_ID=$(aws ec2 create-subnet --vpc-id $VPC_ID --cidr-block $SUBNET_CIDR --availability-zone $SUBNET_AZ --query '
 Subnet.SubnetId' --output text --region $REGION)
 echo "Public subnet created with ID: $SUBNET_ID"
-
-# Tag the subnet
-aws ec2 create-tags --resources $SUBNET_ID --tags Key=Name,Value=$SUBNET_NAME --region $REGION
-echo "Subnet tagged with name: $SUBNET_NAME"
 
 deleteVPC() {
     echo "Deleting VPC with ID: $VPC_ID"
